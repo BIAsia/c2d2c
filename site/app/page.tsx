@@ -44,19 +44,19 @@ const cases = [
     id: "A",
     title: "Global search",
     meta: "Figma → code restore",
-    className: "case-blue",
+    className: "case-light",
   },
   {
     id: "B",
     title: "Chat inline",
     meta: "code → Figma export",
-    className: "case-green",
+    className: "case-mid",
   },
   {
     id: "C",
     title: "Radius system",
     meta: "component governance",
-    className: "case-orange",
+    className: "case-deep",
   },
   {
     id: "D",

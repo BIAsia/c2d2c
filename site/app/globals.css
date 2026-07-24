@@ -5,13 +5,13 @@
 }
 
 html {
-  background: oklch(96% 0.008 88);
+  background: oklch(96% 0.005 95);
   scroll-behavior: smooth;
 }
 
 body {
-  background: oklch(96% 0.008 88);
-  color: oklch(20% 0.024 260);
+  background: oklch(96% 0.005 95);
+  color: oklch(20% 0.008 95);
   font-family: "Helvetica Neue", Inter, Arial, sans-serif;
   font-weight: 400;
   overflow-x: hidden;
@@ -28,12 +28,12 @@ a {
 }
 
 .stage {
-  --paper: oklch(96% 0.008 calc(88 + var(--dh, 0)));
-  --ink: oklch(20% 0.024 calc(260 + var(--dh, 0)));
-  --blue: oklch(58% 0.23 calc(264 + var(--dh, 0)));
-  --green: oklch(86% 0.19 calc(126 + var(--dh, 0)));
-  --orange: oklch(69% 0.2 calc(34 + var(--dh, 0)));
-  --violet: oklch(61% 0.2 calc(305 + var(--dh, 0)));
+  --paper: oklch(96% 0.005 calc(95 + var(--dh, 0)));
+  --ink: oklch(20% 0.008 calc(95 + var(--dh, 0)));
+  --tone-light: oklch(91% 0.005 calc(95 + var(--dh, 0)));
+  --tone-mid: oklch(75% 0.006 calc(95 + var(--dh, 0)));
+  --tone-deep: oklch(43% 0.007 calc(95 + var(--dh, 0)));
+  --tone-dark: oklch(29% 0.008 calc(95 + var(--dh, 0)));
   --muted: color-mix(in oklch, var(--ink) 58%, var(--paper));
   --ph: color-mix(in oklch, var(--ink) 7%, var(--paper));
   --hair: color-mix(in oklch, var(--ink) 34%, transparent);
@@ -259,25 +259,25 @@ a {
 }
 
 .orbit-outer::before {
-  background: var(--blue);
+  background: var(--tone-deep);
   left: 14%;
   top: 14%;
 }
 
 .orbit-outer::after {
-  background: var(--orange);
+  background: var(--tone-mid);
   bottom: 14%;
   right: 14%;
 }
 
 .orbit-inner {
-  border-color: var(--blue);
+  border-color: var(--tone-deep);
   inset: 20%;
 }
 
 .orbit-inner::before,
 .orbit-inner::after {
-  background: var(--green);
+  background: var(--tone-mid);
   content: "";
   height: 1px;
   left: -30%;
@@ -317,7 +317,8 @@ a {
 
 .orbit-core {
   align-items: center;
-  background: var(--green);
+  background: var(--tone-light);
+  border: 1px solid var(--ink);
   border-radius: 50%;
   display: flex;
   flex-direction: column;
@@ -509,7 +510,7 @@ a {
 }
 
 .quote-mark {
-  color: var(--green);
+  color: var(--tone-mid);
   font-size: clamp(90px, 13cqi, 190px);
   grid-column: 3;
   line-height: 0.75;
@@ -586,17 +587,17 @@ a {
   text-transform: uppercase;
 }
 
-.case-blue {
-  background: var(--blue);
+.case-light {
+  background: var(--tone-light);
+}
+
+.case-mid {
+  background: var(--tone-mid);
+}
+
+.case-deep {
+  background: var(--tone-deep);
   color: var(--paper);
-}
-
-.case-green {
-  background: var(--green);
-}
-
-.case-orange {
-  background: var(--orange);
 }
 
 .case-ink {
@@ -645,7 +646,7 @@ a {
 }
 
 .adopt {
-  background: var(--green);
+  background: var(--tone-light);
   padding-block: var(--band);
 }
 
@@ -871,7 +872,7 @@ code {
   }
 
   .pipeline-row:hover {
-    background: color-mix(in oklch, var(--blue) 9%, var(--paper));
+    background: var(--tone-light);
   }
 
   .pipeline-row:hover h3,
@@ -884,13 +885,13 @@ code {
   }
 
   .case-card:hover .case-cover {
-    background-color: color-mix(in oklch, currentColor 12%, var(--violet));
+    filter: contrast(1.06);
     transform: scale(1.012);
   }
 
   .adopt-cta:hover {
     background: var(--ink);
-    color: var(--green);
+    color: var(--tone-light);
   }
 }
 

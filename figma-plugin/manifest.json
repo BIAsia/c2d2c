@@ -1,0 +1,19 @@
+{
+  "name": "Token Sync",
+  "id": "1655899127697158885",
+  "api": "1.0.0",
+  "main": "code.js",
+  "capabilities": [],
+  "enableProposedApi": false,
+  "documentAccess": "dynamic-page",
+  "editorType": [
+    "figma"
+  ],
+  "ui": "ui.html",
+  "networkAccess": {
+    "allowedDomains": [
+      "https://gitlab.example.com"
+    ],
+    "reasoning": "Pull design-token snapshots from and open merge requests against your GitLab repository."
+  }
+}

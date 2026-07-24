@@ -1,0 +1,914 @@
+<style>
+  :root {
+    color-scheme: light dark;
+    --fg: var(--figma-color-text, #1e1e1e);
+    --fg-secondary: var(--figma-color-text-secondary, #8d8d8d);
+    --bg: var(--figma-color-bg, #ffffff);
+    --bg-secondary: var(--figma-color-bg-secondary, #f5f5f5);
+    --border: var(--figma-color-border, #e6e6e6);
+    --brand: var(--figma-color-bg-brand, #0d99ff);
+    --danger: var(--figma-color-text-danger, #e03e1a);
+    --radius: 6px;
+  }
+  * {
+    box-sizing: border-box;
+  }
+  body {
+    margin: 0;
+    font-family: Inter, "Helvetica Neue", system-ui, sans-serif;
+    font-size: 11px;
+    line-height: 16px;
+    color: var(--fg);
+    background: var(--bg);
+  }
+
+  /* tab bar */
+  .tabs {
+    display: flex;
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    padding: 0 8px;
+    background: var(--bg);
+    border-bottom: 1px solid var(--border);
+  }
+  .tabs button {
+    appearance: none;
+    border: none;
+    background: none;
+    padding: 12px 8px 10px;
+    margin: 0;
+    cursor: pointer;
+    color: var(--fg-secondary);
+    border-bottom: 2px solid transparent;
+    font: inherit;
+    font-weight: 500;
+    transition: color 0.1s;
+  }
+  .tabs button:hover {
+    color: var(--fg);
+  }
+  .tabs button.active {
+    color: var(--fg);
+    border-bottom-color: var(--brand);
+  }
+
+  /* panes */
+  .pane {
+    display: none;
+    padding: 16px;
+  }
+  .pane.active {
+    display: block;
+  }
+  .lead {
+    color: var(--fg-secondary);
+    margin: 0 0 12px;
+  }
+
+  /* fields */
+  .field {
+    margin-bottom: 12px;
+  }
+  .field label {
+    display: block;
+    margin-bottom: 4px;
+    color: var(--fg-secondary);
+    font-weight: 500;
+  }
+  input[type="text"],
+  input[type="password"] {
+    width: 100%;
+    height: 30px;
+    padding: 0 8px;
+    border: 1px solid var(--border);
+    border-radius: var(--radius);
+    background: var(--bg);
+    color: inherit;
+    font: inherit;
+    outline: none;
+    transition: border-color 0.1s, box-shadow 0.1s;
+  }
+  input[type="text"]:hover,
+  input[type="password"]:hover {
+    border-color: var(--fg-secondary);
+  }
+  input[type="text"]:focus,
+  input[type="password"]:focus {
+    border-color: var(--brand);
+    box-shadow: inset 0 0 0 1px var(--brand);
+  }
+
+  /* checkbox rows */
+  .check {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 8px;
+    cursor: pointer;
+    color: var(--fg);
+    font-weight: 400;
+  }
+  .check input {
+    appearance: none;
+    -webkit-appearance: none;
+    flex: none;
+    width: 14px;
+    height: 14px;
+    margin: 0;
+    display: grid;
+    place-content: center;
+    border: 1px solid var(--fg-secondary);
+    border-radius: 3px;
+    background: var(--bg);
+    cursor: pointer;
+  }
+  .check input:checked {
+    background: var(--brand);
+    border-color: var(--brand);
+  }
+  .check input:checked::after {
+    content: "";
+    width: 3px;
+    height: 7px;
+    margin-top: -1px;
+    border: solid #fff;
+    border-width: 0 2px 2px 0;
+    transform: rotate(45deg);
+  }
+  .check input:focus-visible {
+    outline: 2px solid var(--brand);
+    outline-offset: 1px;
+  }
+
+  /* buttons */
+  .actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 14px;
+  }
+  button.btn {
+    appearance: none;
+    height: 30px;
+    padding: 0 14px;
+    border-radius: var(--radius);
+    border: 1px solid transparent;
+    font: inherit;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.1s, border-color 0.1s, opacity 0.1s;
+  }
+  button.primary {
+    background: var(--brand);
+    color: #fff;
+  }
+  button.primary:hover:not(:disabled) {
+    filter: brightness(0.94);
+  }
+  button.secondary {
+    background: var(--bg);
+    color: var(--fg);
+    border-color: var(--border);
+  }
+  button.secondary:hover:not(:disabled) {
+    border-color: var(--fg-secondary);
+  }
+  button.btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+  }
+
+  /* console / log */
+  .log {
+    margin-top: 14px;
+    padding: 10px;
+    max-height: 260px;
+    overflow: auto;
+    background: var(--bg-secondary);
+    border-radius: var(--radius);
+    white-space: pre-wrap;
+    word-break: break-word;
+    font-family: ui-monospace, SFMono-Regular, Menlo, monospace;
+    font-size: 11px;
+    line-height: 16px;
+    color: var(--fg-secondary);
+  }
+  .log:empty {
+    display: none;
+  }
+
+  a {
+    color: var(--brand);
+  }
+</style>
+
+<div class="tabs">
+  <button data-tab="pull" class="active">Pull</button>
+  <button data-tab="push">Push</button>
+  <button data-tab="preview">Preview</button>
+  <button data-tab="settings">Settings</button>
+</div>
+
+<div class="pane active" id="pane-pull">
+  <p class="lead">Pull the token snapshot from GitLab and apply it to this file's variables and styles.</p>
+  <label class="check"><input type="checkbox" id="pull-styles" checked /><span>Also sync styles (gradients / shadows / type)</span></label>
+  <label class="check"><input type="checkbox" id="pull-orphans" /><span>Remove variables no longer present in code</span></label>
+  <div class="actions"><button class="btn primary" id="btn-pull">Pull &amp; apply</button></div>
+  <div class="log" id="log-pull">Idle.</div>
+</div>
+
+<div class="pane" id="pane-push">
+  <p class="lead">Read this file's variable edits, diff against the repo snapshot, write the changed values back into globals.css (source of truth), then open a merge request with both.</p>
+  <div class="actions">
+    <button class="btn primary" id="btn-diff">Read changes</button>
+    <button class="btn secondary" id="btn-mr" disabled>Create MR</button>
+    <button class="btn secondary" id="btn-open-mr" disabled>Open MR ↗</button>
+  </div>
+  <div class="log" id="log-push">Idle.</div>
+</div>
+
+<div class="pane" id="pane-preview">
+  <p class="lead">Apply the tokens &amp; styles to this file (create or update them, like Pull), then draw preview frames bound to those real Figma variables &amp; styles.</p>
+  <div class="actions">
+    <button class="btn primary" id="btn-pv-all">Generate all</button>
+    <button class="btn secondary" id="btn-pv-color">Color</button>
+    <button class="btn secondary" id="btn-pv-typography">Typography</button>
+    <button class="btn secondary" id="btn-pv-shadow">Shadow</button>
+    <button class="btn secondary" id="btn-pv-radius">Radius</button>
+  </div>
+  <div class="log" id="log-preview">Idle. Content is grouped by your real token tree and always mirrors the file.</div>
+</div>
+
+<div class="pane" id="pane-settings">
+  <div class="field">
+    <label for="s-base">GitLab URL</label>
+    <input type="text" id="s-base" placeholder="https://gitlab.example.com" />
+  </div>
+  <div class="field">
+    <label for="s-project">Project path (group/project)</label>
+    <input type="text" id="s-project" placeholder="your-group/your-repo" />
+  </div>
+  <div class="field">
+    <label for="s-token">Access token (scope: api)</label>
+    <input type="password" id="s-token" />
+  </div>
+  <div class="field">
+    <label for="s-ref">Target branch</label>
+    <input type="text" id="s-ref" placeholder="main" />
+  </div>
+  <div class="field">
+    <label for="s-vars">variables file path</label>
+    <input type="text" id="s-vars" placeholder="frontend/design/figma-variables.json" />
+  </div>
+  <div class="field">
+    <label for="s-styles">styles file path</label>
+    <input type="text" id="s-styles" placeholder="frontend/design/figma-styles.json" />
+  </div>
+  <div class="field">
+    <label for="s-globals">globals.css path (Push write-back target)</label>
+    <input type="text" id="s-globals" placeholder="frontend/src/styles/globals.css" />
+  </div>
+  <div class="actions"><button class="btn primary" id="btn-save">Save</button></div>
+  <div class="log" id="log-settings">Use a Project Access Token (api scope). Stored in Figma clientStorage, visible on this machine only.</div>
+</div>
+
+<script>
+  "use strict";
+  const $ = (id) => document.getElementById(id);
+  const DEFAULTS = {
+    base: "https://gitlab.example.com",
+    project: "your-group/your-repo",
+    token: "",
+    ref: "main",
+    vars: "frontend/design/figma-variables.json",
+    styles: "frontend/design/figma-styles.json",
+    globals: "frontend/src/styles/globals.css",
+  };
+  let settings = { ...DEFAULTS };
+  let pendingPatch = null; // { content, diffLines, added }
+  let lastMrUrl = null;
+
+  // --- tabs ---
+  for (const btn of document.querySelectorAll(".tabs button")) {
+    btn.onclick = () => {
+      document.querySelectorAll(".tabs button").forEach((b) => b.classList.remove("active"));
+      document.querySelectorAll(".pane").forEach((p) => p.classList.remove("active"));
+      btn.classList.add("active");
+      $("pane-" + btn.dataset.tab).classList.add("active");
+    };
+  }
+
+  const post = (msg) => parent.postMessage({ pluginMessage: msg }, "*");
+  const log = (id, text) => {
+    $(id).textContent = text;
+  };
+  const append = (id, text) => {
+    $(id).textContent += "\n" + text;
+    $(id).scrollTop = $(id).scrollHeight;
+  };
+
+  // --- settings ---
+  function fillSettings() {
+    $("s-base").value = settings.base || DEFAULTS.base;
+    $("s-project").value = settings.project || DEFAULTS.project;
+    $("s-token").value = settings.token || "";
+    $("s-ref").value = settings.ref || DEFAULTS.ref;
+    $("s-vars").value = settings.vars || DEFAULTS.vars;
+    $("s-styles").value = settings.styles || DEFAULTS.styles;
+    $("s-globals").value = settings.globals || DEFAULTS.globals;
+  }
+  $("btn-save").onclick = () => {
+    settings = {
+      base: $("s-base").value.trim().replace(/\/$/, "") || DEFAULTS.base,
+      project: $("s-project").value.trim() || DEFAULTS.project,
+      token: $("s-token").value.trim(),
+      ref: $("s-ref").value.trim() || DEFAULTS.ref,
+      vars: $("s-vars").value.trim() || DEFAULTS.vars,
+      styles: $("s-styles").value.trim() || DEFAULTS.styles,
+      globals: $("s-globals").value.trim() || DEFAULTS.globals,
+    };
+    post({ type: "save-settings", settings });
+  };
+
+  // --- GitLab API ---
+  function api(path, options) {
+    const url = `${settings.base}/api/v4/projects/${encodeURIComponent(settings.project)}${path}`;
+    const headers = { "PRIVATE-TOKEN": settings.token };
+    if (options && options.json) headers["Content-Type"] = "application/json";
+    return fetch(url, {
+      method: (options && options.method) || "GET",
+      headers,
+      body: options && options.json ? JSON.stringify(options.json) : undefined,
+    }).then(async (res) => {
+      if (!res.ok) {
+        const body = await res.text().catch(() => "");
+        throw new Error(`GitLab ${res.status}: ${body.slice(0, 300)}`);
+      }
+      return options && options.raw ? res.text() : res.json();
+    });
+  }
+  const fetchRaw = (filePath) =>
+    api(`/repository/files/${encodeURIComponent(filePath)}/raw?ref=${encodeURIComponent(settings.ref)}`, {
+      raw: true,
+    });
+
+  function requireSettings(logId) {
+    if (!settings.project || !settings.token) {
+      log(logId, "Fill in the project path and token in Settings first.");
+      return false;
+    }
+    return true;
+  }
+
+  // --- Pull ---
+  $("btn-pull").onclick = async () => {
+    if (!requireSettings("log-pull")) return;
+    log("log-pull", "Pulling…");
+    try {
+      const variables = JSON.parse(await fetchRaw(settings.vars));
+      let styles = null;
+      if ($("pull-styles").checked) {
+        styles = JSON.parse(await fetchRaw(settings.styles));
+        append("log-pull", "Fetched variables + styles snapshot, applying…");
+      } else {
+        append("log-pull", "Fetched variables snapshot, applying…");
+      }
+      post({ type: "apply", variables, styles, removeOrphans: $("pull-orphans").checked });
+    } catch (e) {
+      append("log-pull", "✗ " + e.message);
+    }
+  };
+
+  // --- Preview: fetch snapshots, draw poster frames on canvas ----------------
+  async function runPreview(kind) {
+    if (!requireSettings("log-preview")) return;
+    const src = `${settings.project} @ ${settings.ref}`;
+    log("log-preview", `Source of truth: ${settings.globals}`);
+    append("log-preview", `  export-figma-variables.mjs → JSON · verified in sync by check:figma-variables (CI)`);
+    append("log-preview", `Pulling the export from GitLab · ${src}`);
+    for (const b of document.querySelectorAll("#pane-preview button")) b.disabled = true;
+    try {
+      append("log-preview", `  ${settings.vars}`);
+      const variables = JSON.parse(await fetchRaw(settings.vars));
+      let styles = null;
+      if (kind === "all" || kind === "typography" || kind === "shadow") {
+        append("log-preview", `  ${settings.styles}`);
+        styles = JSON.parse(await fetchRaw(settings.styles));
+      }
+      append("log-preview", `Applying to file + drawing ${kind}…`);
+      post({ type: "preview", kind, variables, styles });
+    } catch (e) {
+      append("log-preview", "✗ " + e.message);
+      for (const b of document.querySelectorAll("#pane-preview button")) b.disabled = false;
+    }
+  }
+  $("btn-pv-all").onclick = () => runPreview("all");
+  $("btn-pv-color").onclick = () => runPreview("color");
+  $("btn-pv-typography").onclick = () => runPreview("typography");
+  $("btn-pv-shadow").onclick = () => runPreview("shadow");
+  $("btn-pv-radius").onclick = () => runPreview("radius");
+
+  // --- Push: diff + minimal patch of the repo JSON ---------------------------
+  // The repo file stays canonical: we only rewrite leaf $value fields that the
+  // designer changed (plus append Figma-only variables), so the MR diff is
+  // value-level, not a wholesale re-serialization.
+
+  function walkLeaves(tree, pathParts, visit) {
+    for (const key of Object.keys(tree)) {
+      const node = tree[key];
+      if (node && typeof node === "object" && "$value" in node) visit(pathParts.concat(key), node);
+      else if (node && typeof node === "object") walkLeaves(node, pathParts.concat(key), visit);
+    }
+  }
+
+  // Reverse of the export script's routeFor(): (collection, variable name) → css var name.
+  function cssNameFor(collName, name) {
+    const parts = name.split("/");
+    if (collName.endsWith("Ramps")) return `--palette-${parts.join("-")}`;
+    if (collName.endsWith("Product")) {
+      if (parts[parts.length - 1] === "default") parts.pop();
+      return `--${parts.join("-")}`;
+    }
+    // Core
+    if (parts[0] === "tone") return `--${parts.join("-")}`;
+    if (parts[0] === "surface") return `--sem-${parts.slice(1).join("-")}`;
+    return `--sem-${parts.join("-")}`;
+  }
+
+  const aliasToRef = (val) => `{${val.alias.split("/").join(".")}}`;
+
+  // --- globals.css write-back (mirrors scripts/export-figma-variables.mjs --apply) ---
+  // A changed token's snapshot value → the CSS value string to write, matching
+  // the current declaration's form (alias / color literal / number+unit).
+  // A change → the CSS value string to write (unit-matched to the current decl),
+  // or null when it can't be reconstructed safely (caller reports it as manual).
+  function toCssValue(c, curRaw) {
+    const t = c.type;
+    if (t === "shadow" || t === "gradient") return String(c.newVal); // already a full string
+    if (t === "lineheight") {
+      if (/rem\s*$/i.test(curRaw)) return `${+(c.px / 16).toFixed(6)}rem`;
+      if (/px\s*$/i.test(curRaw)) return `${c.px}px`;
+      return `${+(c.px / c.size).toFixed(4)}`; // unitless = multiplier of font size
+    }
+    if (t === "letterspacing") {
+      if (/em\s*$/i.test(curRaw)) {
+        const em = c.percent != null ? c.percent / 100 : c.px != null ? c.px / c.size : null;
+        return em == null ? null : `${+em.toFixed(6)}em`;
+      }
+      const px = c.px != null ? c.px : c.percent != null ? (c.percent / 100) * c.size : null;
+      return px == null ? null : `${+px.toFixed(4)}px`;
+    }
+    if (typeof c.newVal === "string" && /^\{.*\}$/.test(c.newVal)) {
+      const [hue, ...rest] = c.newVal.slice(1, -1).split(".");
+      return `var(--palette-${hue}-${rest.join("-")})`;
+    }
+    if (t === "float") {
+      const n = Number(c.newVal);
+      if (/rem\s*$/i.test(curRaw)) return `${+(n / 16).toFixed(6)}rem`;
+      if (/px\s*$/i.test(curRaw)) return `${n}px`;
+      return `${n}`;
+    }
+    return String(c.newVal);
+  }
+
+  // shadow layers → a CSS box-shadow string (inverse of the export's parser),
+  // formatted to match the file's convention so unchanged parts don't churn the
+  // diff: bare `0` for zero lengths, and modern `rgb(r g b / a)` color syntax.
+  const cssLen = (n) => (n === 0 ? "0" : `${n}px`);
+  const modernColor = (str) => {
+    const m = String(str).match(/^rgba?\(\s*([\d.]+)\s*,\s*([\d.]+)\s*,\s*([\d.]+)\s*(?:,\s*([\d.]+)\s*)?\)$/);
+    if (!m) return str; // hex or already space-syntax
+    const a = m[4] == null ? 1 : +m[4];
+    return a >= 1 ? `rgb(${m[1]} ${m[2]} ${m[3]})` : `rgb(${m[1]} ${m[2]} ${m[3]} / ${a})`;
+  };
+  const boxShadow = (layers) =>
+    layers
+      .map((l) => `${l.inset ? "inset " : ""}${cssLen(l.x)} ${cssLen(l.y)} ${cssLen(l.blur)} ${cssLen(l.spread)} ${modernColor(l.color)}`)
+      .join(", ") || "none";
+
+  // gradient {angle, stops} → a CSS linear-gradient string.
+  const gradientCss = (g) =>
+    `linear-gradient(${g.angle}deg, ${g.stops.map((s) => `${s.color} ${+(s.position * 100).toFixed(2)}%`).join(", ")})`;
+
+  // Scan globals.css into `--name|light|dark` → { start, end, raw } value spans,
+  // scoped like the export parser: :root / @theme = Light, .dark = Dark. Comments
+  // are masked (not removed) so offsets stay valid against the original text.
+  function scanDecls(orig) {
+    const masked = orig.replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, " "));
+    const decls = new Map();
+    let depth = 0;
+    let header = "";
+    let kind = null;
+    let segStart = 0;
+    for (let i = 0; i < masked.length; i++) {
+      const ch = masked[i];
+      if (ch === "{") {
+        if (depth === 0) {
+          const sel = header.trim();
+          kind = sel === ":root" ? "root" : sel.startsWith("@theme") ? "theme" : sel === ".dark" ? "dark" : null;
+        }
+        depth++;
+        header = "";
+        segStart = i + 1;
+      } else if (ch === "}") {
+        depth--;
+        if (depth <= 0) {
+          depth = 0;
+          kind = null;
+        }
+        segStart = i + 1;
+      } else if (ch === ";") {
+        if (depth === 1 && kind) {
+          const seg = masked.slice(segStart, i);
+          const m = seg.match(/^(\s*)(--[a-z0-9-]+)(\s*:\s*)([\s\S]*?)(\s*)$/i);
+          if (m) {
+            const mode = kind === "dark" ? "dark" : "light";
+            const key = `${m[2]}|${mode}`;
+            if (!decls.has(key)) {
+              const valStart = segStart + m[1].length + m[2].length + m[3].length;
+              const valEnd = i - m[5].length;
+              decls.set(key, { start: valStart, end: valEnd, raw: orig.slice(valStart, valEnd) });
+            }
+          }
+        }
+        segStart = i + 1;
+      } else if (depth === 0) {
+        header += ch;
+      }
+    }
+    return decls;
+  }
+
+  // Apply the safe subset of cssChanges to globals.css text: only tokens whose
+  // current declaration is a plain literal (or alias→alias). Everything else is
+  // reported for manual handling rather than clobbered.
+  function applyGlobals(orig, cssChanges) {
+    const decls = scanDecls(orig);
+    const repls = [];
+    const applied = [];
+    const manual = [];
+    for (const c of cssChanges) {
+      const label = `${c.cssName} · ${c.mode}`;
+      const d = decls.get(`${c.cssName}|${c.mode}`);
+      if (!d) {
+        manual.push(
+          c.mode === "dark" && decls.has(`${c.cssName}|light`)
+            ? `${label} — no .dark override; add one by hand`
+            : `${label} — not declared in globals.css`
+        );
+        continue;
+      }
+      const curRaw = d.raw.trim();
+      const newIsAlias = typeof c.newVal === "string" && /^\{.*\}$/.test(c.newVal);
+      const curIsAlias = /^var\(\s*--palette-/i.test(curRaw);
+      let curIsLiteral;
+      if (c.type === "shadow" || c.type === "gradient") curIsLiteral = !/var\(/i.test(curRaw);
+      else if (c.type === "letterspacing") curIsLiteral = /^-?[\d.]+(px|em)?$/i.test(curRaw);
+      else if (c.type === "lineheight" || c.type === "float") curIsLiteral = /^-?[\d.]+(px|rem)?$/i.test(curRaw);
+      else curIsLiteral = /^(#[0-9a-f]{3,8}|rgba?\([^)]*\)|white|black|transparent)$/i.test(curRaw);
+      const text = newIsAlias ? (curIsAlias || curIsLiteral ? toCssValue(c, curRaw) : null) : curIsLiteral ? toCssValue(c, curRaw) : null;
+      if (text != null) {
+        repls.push({ start: d.start, end: d.end, text });
+        applied.push(`${label}: ${curRaw} → ${text}`);
+      } else {
+        manual.push(`${label} — CSS authors this as \`${curRaw.slice(0, 40)}\`; apply by hand`);
+      }
+    }
+    repls.sort((a, b) => b.start - a.start);
+    let out = orig;
+    for (const r of repls) out = out.slice(0, r.start) + r.text + out.slice(r.end);
+    return { text: out, applied, manual };
+  }
+
+  function buildPatch(repoDoc, snapshot) {
+    const byKey = new Map();
+    for (const coll of snapshot.collections) {
+      for (const e of coll.entries) byKey.set(`${coll.name} ${e.name}`, e);
+    }
+    const diffLines = [];
+    const seen = new Set();
+    const added = [];
+    const cssChanges = [];
+    for (const docEntry of repoDoc) {
+      const collName = Object.keys(docEntry)[0];
+      const root = docEntry[collName];
+      for (const mode of ["Light", "Dark"]) {
+        walkLeaves(root.modes[mode], [], (pathParts, leaf) => {
+          const name = pathParts.join("/");
+          const key = `${collName} ${name}`;
+          seen.add(key);
+          const entry = byKey.get(key);
+          if (!entry) {
+            diffLines.push(`- ${collName} · ${mode} · ${name} (deleted in Figma; deleting in code means editing globals.css)`);
+            return;
+          }
+          const val = entry.values[mode];
+          if (val == null) return;
+          const next = typeof val === "object" && val.alias ? aliasToRef(val) : val;
+          // Numbers compare with tolerance so 32-bit float noise (0.8 vs
+          // 0.800000011920929) doesn't register as a change.
+          const changed =
+            typeof leaf.$value === "number" && typeof next === "number"
+              ? Math.abs(leaf.$value - next) > 1e-6
+              : String(leaf.$value) !== String(next);
+          if (changed) {
+            diffLines.push(`~ ${collName} · ${mode} · ${name}: ${leaf.$value} → ${next}`);
+            leaf.$value = next;
+            const cssName = String((leaf.$codeSyntax && leaf.$codeSyntax.WEB) || "").match(/var\(\s*(--[a-z0-9-]+)\s*\)/);
+            if (cssName) cssChanges.push({ cssName: cssName[1], mode: mode.toLowerCase(), newVal: next, type: leaf.$type });
+          }
+        });
+      }
+      // Figma-only variables belonging to THIS collection get appended to its tree.
+      const snapColl = snapshot.collections.find((c) => c.name === collName);
+      for (const entry of snapColl ? snapColl.entries : []) {
+        if (seen.has(`${collName} ${entry.name}`)) continue;
+        added.push(`${collName} · ${entry.name}`);
+        for (const mode of ["Light", "Dark"]) {
+          const val = entry.values[mode];
+          if (val == null) continue;
+          const isAlias = typeof val === "object" && val.alias;
+          const pathParts = entry.name.split("/");
+          let node = root.modes[mode];
+          for (const part of pathParts.slice(0, -1)) node = node[part] = node[part] || {};
+          const leaf = {
+            $scopes: entry.scopes && entry.scopes.length ? entry.scopes : ["ALL_FILLS"],
+            $type: entry.type,
+            $value: isAlias ? aliasToRef(val) : val,
+            $codeSyntax: { WEB: entry.codeSyntax || `var(${cssNameFor(collName, entry.name)})` },
+            $description: entry.description || `Added in Figma ${new Date().toISOString().slice(0, 10)}`,
+          };
+          if (isAlias) {
+            leaf.$libraryName = "";
+            leaf.$collectionName = val.collection;
+          }
+          node[pathParts[pathParts.length - 1]] = leaf;
+          diffLines.push(`+ ${collName} · ${mode} · ${entry.name} = ${leaf.$value}`);
+        }
+      }
+    }
+    return { content: JSON.stringify(repoDoc, null, 2) + "\n", diffLines, added, cssChanges };
+  }
+
+  // Diff the serialized effect (shadow) styles against the repo figma-styles.json,
+  // patching changed entries and producing a box-shadow write-back per change.
+  function buildStylePatch(repoStyles, styles) {
+    const styleDiffLines = [];
+    const cssChanges = [];
+    let changed = false;
+    repoStyles.effects = repoStyles.effects || { Light: {}, Dark: {} };
+    repoStyles.paints = repoStyles.paints || { Light: {}, Dark: {} };
+    repoStyles.text = repoStyles.text || {};
+    for (const mode of ["Light", "Dark"]) {
+      // effects (shadows) → box-shadow
+      const localEff = (styles.effects && styles.effects[mode]) || {};
+      const repoEff = repoStyles.effects[mode] || (repoStyles.effects[mode] = {});
+      for (const key of Object.keys(localEff)) {
+        if (repoEff[key] === undefined) continue; // Figma-only — needs a manual --key definition
+        if (JSON.stringify(repoEff[key]) === JSON.stringify(localEff[key])) continue;
+        styleDiffLines.push(`~ effect · ${mode} · ${key}`);
+        repoEff[key] = localEff[key];
+        changed = true;
+        cssChanges.push({ cssName: `--${key}`, mode: mode.toLowerCase(), newVal: boxShadow(localEff[key]), type: "shadow" });
+      }
+      // paints (gradients) → linear-gradient
+      const localP = (styles.paints && styles.paints[mode]) || {};
+      const repoP = repoStyles.paints[mode] || (repoStyles.paints[mode] = {});
+      for (const key of Object.keys(localP)) {
+        if (repoP[key] === undefined) continue;
+        if (JSON.stringify(repoP[key]) === JSON.stringify(localP[key])) continue;
+        styleDiffLines.push(`~ paint · ${mode} · ${key}`);
+        repoP[key] = localP[key];
+        changed = true;
+        cssChanges.push({ cssName: `--${key}`, mode: mode.toLowerCase(), newVal: gradientCss(localP[key]), type: "gradient" });
+      }
+    }
+    // text (mode-independent) → --text-<key> (+ line-height / letter-spacing / font-weight companions)
+    // Figma can't represent "0" vs "no letter-spacing" — both read back as
+    // {PERCENT, 0} — so treat 0 and null/undefined as the same ("none"). Without
+    // this, every style whose repo value is 0 (or null) flips to the other.
+    const lsNorm = (v) => (v == null || v === 0 ? null : v);
+    const localT = styles.text || {};
+    for (const key of Object.keys(localT)) {
+      const cur = repoStyles.text[key];
+      const next = localT[key];
+      if (cur === undefined) continue;
+      const lsPctChanged = lsNorm(cur.letterSpacingPercent) !== lsNorm(next.letterSpacingPercent);
+      const lsPxChanged = lsNorm(cur.letterSpacingPx) !== lsNorm(next.letterSpacingPx);
+      // Compare only the reverse-pushable fields; family (fixed by the export's
+      // naming rule) and codeSyntax (derived) can't be pushed, so a font fallback
+      // on those must not register as a change.
+      const same =
+        cur.size === next.size &&
+        cur.lineHeight === next.lineHeight &&
+        !lsPctChanged &&
+        !lsPxChanged &&
+        cur.weight === next.weight;
+      if (same) continue;
+      styleDiffLines.push(`~ text · ${key}`);
+      // keep the repo's family + codeSyntax (not reverse-pushable), and keep its
+      // letter-spacing unless there's a real (non-0/null) change — Figma can't
+      // tell us the original 0-vs-null, so don't churn it.
+      repoStyles.text[key] = {
+        ...cur,
+        size: next.size,
+        lineHeight: next.lineHeight,
+        letterSpacingPercent: lsPctChanged ? next.letterSpacingPercent ?? null : cur.letterSpacingPercent,
+        letterSpacingPx: lsPxChanged ? next.letterSpacingPx ?? null : cur.letterSpacingPx,
+        weight: next.weight,
+      };
+      changed = true;
+      if (cur.size !== next.size) cssChanges.push({ cssName: `--text-${key}`, mode: "light", type: "float", newVal: next.size });
+      if (cur.lineHeight !== next.lineHeight && next.lineHeight != null)
+        cssChanges.push({ cssName: `--text-${key}--line-height`, mode: "light", type: "lineheight", px: next.lineHeight, size: next.size });
+      if ((lsPctChanged || lsPxChanged) && (next.letterSpacingPercent != null || next.letterSpacingPx != null))
+        cssChanges.push({ cssName: `--text-${key}--letter-spacing`, mode: "light", type: "letterspacing", percent: next.letterSpacingPercent, px: next.letterSpacingPx, size: next.size });
+      if (cur.weight !== next.weight) cssChanges.push({ cssName: `--text-${key}--font-weight`, mode: "light", type: "float", newVal: next.weight });
+    }
+    return {
+      stylesContent: changed ? JSON.stringify(repoStyles, null, 2) + "\n" : null,
+      styleDiffLines,
+      cssChanges,
+    };
+  }
+
+  $("btn-open-mr").onclick = () => {
+    if (lastMrUrl) post({ type: "open-url", url: lastMrUrl });
+  };
+
+  $("btn-diff").onclick = async () => {
+    if (!requireSettings("log-push")) return;
+    log("log-push", "Reading this file's variables…");
+    pendingPatch = null;
+    $("btn-mr").disabled = true;
+    post({ type: "serialize" });
+  };
+
+  async function onSerialized(snapshot, styles) {
+    try {
+      const total = snapshot.collections.reduce((n, c) => n + c.entries.length, 0);
+      append("log-push", `Local: ${snapshot.collections.length} collection(s), ${total} variables — fetching repo snapshot…`);
+      const repoDoc = JSON.parse(await fetchRaw(settings.vars));
+      const patch = buildPatch(repoDoc, snapshot);
+      patch.varChanged = patch.diffLines.length > 0;
+
+      // Effect (shadow) styles: diff against figma-styles.json.
+      let stylePatch = { stylesContent: null, styleDiffLines: [], cssChanges: [] };
+      if (styles && styles.effects) {
+        const repoStyles = JSON.parse(await fetchRaw(settings.styles));
+        stylePatch = buildStylePatch(repoStyles, styles);
+      }
+      patch.stylesContent = stylePatch.stylesContent;
+      patch.diffLines = patch.diffLines.concat(stylePatch.styleDiffLines);
+
+      if (patch.diffLines.length === 0) {
+        append("log-push", "✓ Matches the repo snapshot, no MR needed.");
+        return;
+      }
+      append("log-push", `Found ${patch.diffLines.length} change(s):\n` + patch.diffLines.join("\n"));
+
+      // Write the changed values back into globals.css (the source of truth), so
+      // the MR patches real code — not just the snapshot.
+      patch.globals = null;
+      const cssChanges = patch.cssChanges.concat(stylePatch.cssChanges);
+      if (cssChanges.length) {
+        append("log-push", `\nFetching ${settings.globals} to write values back…`);
+        const before = await fetchRaw(settings.globals);
+        const g = applyGlobals(before, cssChanges);
+        if (g.applied.length) {
+          patch.globals = g.text;
+          patch.globalsApplied = g.applied;
+          append("log-push", `✓ globals.css: ${g.applied.length} value(s) applied:\n  ` + g.applied.join("\n  "));
+        }
+        if (g.manual.length) {
+          patch.globalsManual = g.manual;
+          append("log-push", `⚠ ${g.manual.length} need manual edit in globals.css:\n  ` + g.manual.join("\n  "));
+        }
+      }
+      pendingPatch = patch;
+      $("btn-mr").disabled = false;
+      append("log-push", "\nConfirm, then click Create MR.");
+    } catch (e) {
+      append("log-push", "✗ " + e.message);
+    }
+  }
+
+  $("btn-mr").onclick = async () => {
+    if (!pendingPatch) return;
+    $("btn-mr").disabled = true;
+    append("log-push", "Creating branch + commit + MR…");
+    try {
+      const stamp = new Date().toISOString().slice(0, 10);
+      const branch = `figma-sync/${stamp}-${Math.random().toString(36).slice(2, 7)}`;
+      const actions = [];
+      if (pendingPatch.varChanged) {
+        actions.push({ action: "update", file_path: settings.vars, content: pendingPatch.content });
+      }
+      if (pendingPatch.stylesContent) {
+        actions.push({ action: "update", file_path: settings.styles, content: pendingPatch.stylesContent });
+      }
+      if (pendingPatch.globals) {
+        actions.push({ action: "update", file_path: settings.globals, content: pendingPatch.globals });
+      }
+      await api("/repository/commits", {
+        method: "POST",
+        json: {
+          branch,
+          start_branch: settings.ref,
+          commit_message: `design: sync Figma variable edits (${pendingPatch.diffLines.length} changes)`,
+          actions,
+        },
+      });
+      const desc = [
+        "## Figma → code token sync",
+        "",
+        "Generated from Figma variables by the Token Sync plugin.",
+        "",
+        "```",
+        pendingPatch.diffLines.join("\n"),
+        "```",
+        pendingPatch.globalsApplied
+          ? "\n**Applied to `" + settings.globals + "`** (source of truth), so `check:figma-variables` stays green:\n\n```\n" + pendingPatch.globalsApplied.join("\n") + "\n```"
+          : "",
+        pendingPatch.globalsManual
+          ? "\n⚠️ Need a manual edit in `" + settings.globals + "` (authored as non-literal / missing scope):\n\n```\n" + pendingPatch.globalsManual.join("\n") + "\n```"
+          : "",
+        pendingPatch.added.length
+          ? "\nNew tokens (created in Figma, need defining in globals.css): " + pendingPatch.added.join(", ")
+          : "",
+      ].join("\n");
+      const mr = await api("/merge_requests", {
+        method: "POST",
+        json: {
+          source_branch: branch,
+          target_branch: settings.ref,
+          title: `design: Figma variables sync (${pendingPatch.diffLines.length} changes)`,
+          description: desc,
+          remove_source_branch: true,
+        },
+      });
+      append("log-push", `✓ MR created: ${mr.web_url}`);
+      lastMrUrl = mr.web_url;
+      $("btn-open-mr").disabled = false;
+      post({ type: "notify", message: "MR created ✓" });
+    } catch (e) {
+      append("log-push", "✗ " + e.message);
+      $("btn-mr").disabled = false;
+    }
+  };
+
+  // --- plugin messages ---
+  window.onmessage = (event) => {
+    const msg = event.data.pluginMessage;
+    if (!msg) return;
+    switch (msg.type) {
+      case "settings":
+        settings = { ...DEFAULTS, ...msg.settings };
+        fillSettings();
+        break;
+      case "saved":
+        log("log-settings", "✓ Saved.");
+        break;
+      case "apply-result": {
+        const v = msg.varSummary;
+        let text = `✓ variables: created ${v.created}, updated ${v.updated}, removed ${v.removed}`;
+        if (msg.styleSummary) {
+          const s = msg.styleSummary;
+          text += `\n✓ styles: ${s.paints} paint · ${s.effects} effect · ${s.texts} text`;
+        }
+        const failed = (v.failed || []).concat((msg.styleSummary && msg.styleSummary.failed) || []);
+        if (failed.length) text += `\n✗ failed ${failed.length}:\n  ` + failed.join("\n  ");
+        if (v.notice) text += `\nℹ ${v.notice}`;
+        append("log-pull", text);
+        post({ type: "notify", message: "Sync complete ✓" });
+        break;
+      }
+      case "serialized":
+        onSerialized(msg.snapshot, msg.styles);
+        break;
+      case "preview-result": {
+        for (const b of document.querySelectorAll("#pane-preview button")) b.disabled = false;
+        const pv = msg.varSummary;
+        if (pv) append("log-preview", `Applied · variables: created ${pv.created}, updated ${pv.updated}`);
+        if (msg.styleSummary) {
+          const ps = msg.styleSummary;
+          append("log-preview", `Applied · styles: ${ps.paints} paint · ${ps.effects} effect · ${ps.texts} text`);
+        }
+        append("log-preview", `✓ Generated ${msg.count} frame(s), bound to the file's variables & styles.`);
+        post({ type: "notify", message: "Preview generated ✓" });
+        break;
+      }
+      case "error":
+        append("log-pull", "✗ " + msg.message);
+        append("log-push", "✗ " + msg.message);
+        append("log-preview", "✗ " + msg.message);
+        for (const b of document.querySelectorAll("#pane-preview button")) b.disabled = false;
+        break;
+      default:
+        break;
+    }
+  };
+
+  post({ type: "init" });
+</script>

@@ -1,0 +1,6 @@
+{
+  "name": "c2d2c",
+  "version": "0.1.0",
+  "description": "Code-to-design-to-code: the pipelines closing the loop between Figma and a production codebase. restore (design→code, 1:1 with acceptance and auto-MR), export (code→design: components, state matrices, and tokens, everything bound to variables), govern (converge + freeze a style system with CI gates).",
+  "author": { "name": "ziye" }
+}

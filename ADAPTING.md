@@ -6,6 +6,7 @@ Every project-specific assumption resolves through one file: **`C2D2C.md` at you
 
 | Prerequisite | Without it |
 | --- | --- |
+| Claude Code on Fable 5 | every pipeline degrades: earlier models drop steps mid-run and need re-prompting; the loop stops feeling smooth |
 | Figma Dev Mode MCP connector (read access) | c2d2c:restore steps 1/3 can't extract specs; degrades to eyeballing screenshots |
 | Figma MCP write access (use_figma) | c2d2c:export is unavailable entirely |
 | A token system in the codebase (CSS variables as single source) | token sync has no subject; c2d2c:govern must first build the target |

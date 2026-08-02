@@ -10,6 +10,10 @@
 
 The name is the shape: `c2d` (export, tokens included) and `d2c` (restore) are the two arcs; `govern` is the outer ring that keeps the loop from drifting apart. The optional Token Sync Figma plugin gives designers a push lane back into code — its engineering-side flow is covered by `c2d2c:export` + ADAPTING.md.
 
+## Model
+
+Run the skills with **Claude Fable 5**. Each pipeline is a long multi-stop agent run (Figma tool orchestration, regression screenshots, MR automation); earlier models tend to drop steps and need re-prompting partway through — Fable 5 is what makes the loop run smoothly end to end.
+
 ## Install
 
 As a Claude Code plugin (recommended): add this directory as a local marketplace/plugin, or copy it into your plugin location. The skills then resolve as `c2d2c:restore` etc.

@@ -6,9 +6,9 @@
 | --- | --- | --- |
 | `c2d2c:d2c` | Figma → code | Eight steps from design link to merged MR: survey/reuse audit, plan review (stop), spec extraction (conditional stop), 1:1 build, regression page, motion review, screenshot acceptance (stop), cleanup + auto-MR |
 | `c2d2c:c2d` | code → Figma | Everything that moves code state into Figma — components AND tokens. Three hard rules (enumerate every state from source, bind everything to tokens, ask before componentizing), 12 field-tested use_figma gotchas, plus the token-snapshot/gate discipline |
-| `c2d2c:govern` | code → code | Converge + freeze a style system: census, spec (stop), single source, full migration, CI gate, dead-code removal, write-back |
+| `c2d2c:ds-govern` | code → code | Converge + freeze a style system: census, spec (stop), single source, full migration, CI gate, dead-code removal, write-back |
 
-The name is the shape: `c2d` and `d2c` are the two arcs; `govern` is the outer ring that keeps the loop from drifting apart. The optional Token Sync Figma plugin gives designers a push lane back into code — its engineering-side flow is covered by `c2d2c:c2d` + ADAPTING.md.
+The name is the shape: `c2d` and `d2c` are the two arcs; `ds-govern` is the outer ring that keeps the loop from drifting apart. The optional Token Sync Figma plugin gives designers a push lane back into code — its engineering-side flow is covered by `c2d2c:c2d` + ADAPTING.md.
 
 ## Model
 
@@ -22,7 +22,7 @@ With the skills CLI:
 npx skills add BIAsia/c2d2c
 ```
 
-Installs `d2c`, `c2d`, and `govern` (project-level by default; `-g` for user-level). Each skill travels with what it needs; shared resources it references (the C2D2C template, ADAPTING.md, the Figma plugin source) are fetched from this repository on demand.
+Installs `d2c`, `c2d`, and `ds-govern` (project-level by default; `-g` for user-level). Each skill travels with what it needs; shared resources it references (the C2D2C template, ADAPTING.md, the Figma plugin source) are fetched from this repository on demand.
 
 As a Claude Code plugin: add this repo as a local marketplace/plugin. The skills then resolve as `c2d2c:d2c` etc., with all plugin-root resources available locally.
 
@@ -32,7 +32,7 @@ All skills read one config file: **`C2D2C.md` at your repo root** (fallback `.cl
 
 ## Contents
 
-- `skills/` — the three skills (d2c / c2d / govern); `skills/d2c/scripts/ds-shot.mjs` is the bundled regression-page screenshot tool for the acceptance step (playwright; full page + per-`[data-ds-section]` close-ups, `--dark`)
+- `skills/` — the three skills (d2c / c2d / ds-govern); `skills/d2c/scripts/ds-shot.mjs` is the bundled regression-page screenshot tool for the acceptance step (playwright; full page + per-`[data-ds-section]` close-ups, `--dark`)
 - `figma-plugin/` — Token Sync, the local Figma plugin (TypeScript source; Pull variables/styles + bound foundation posters, Push designer edits as MRs with safe CSS write-back). See its README for build/install; generalization notes in ADAPTING.md.
 - `templates/C2D2C.template.md` — the project parameter file
 - `cases/` — four worked cases from production, one per pipeline

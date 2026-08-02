@@ -1,9 +1,9 @@
 ---
-name: govern
+name: ds-govern
 description: c2d2c governance pipeline — the standard workflow for converging and freezing a component/style system. Use when the user wants to unify, converge, standardize, or govern a visual dimension (radius, shadows, color, spacing, motion, a component API), asks to add a lint/CI gate for a style rule, wants hardcoded values migrated onto tokens, or complains the same style is hand-written differently across the codebase. Covers census → spec → convergence → full migration → gate → dead-code removal → write-back.
 ---
 
-# c2d2c:govern — converge + freeze
+# c2d2c:ds-govern — converge + freeze
 
 ## Project parameters
 

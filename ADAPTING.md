@@ -7,8 +7,8 @@ Every project-specific assumption resolves through one file: **`C2D2C.md` at you
 | Prerequisite | Without it |
 | --- | --- |
 | Claude Code on Fable 5 | every pipeline degrades: earlier models drop steps mid-run and need re-prompting; the loop stops feeling smooth |
-| Figma Dev Mode MCP connector (read access) | c2d2c:restore steps 1/3 can't extract specs; degrades to eyeballing screenshots |
-| Figma MCP write access (use_figma) | c2d2c:export is unavailable entirely |
+| Figma Dev Mode MCP connector (read access) | c2d2c:d2c steps 1/3 can't extract specs; degrades to eyeballing screenshots |
+| Figma MCP write access (use_figma) | c2d2c:c2d is unavailable entirely |
 | A token system in the codebase (CSS variables as single source) | token sync has no subject; c2d2c:govern must first build the target |
 | A component regression surface (/ds or equivalent) | state enumeration has nowhere to land; acceptance degrades to screenshotting business pages |
 | CI that accepts custom script gates | c2d2c:govern converges but never freezes, so it drifts back |
@@ -16,19 +16,19 @@ Every project-specific assumption resolves through one file: **`C2D2C.md` at you
 
 ## 2. Parameter by parameter
 
-### For c2d2c:restore
+### For c2d2c:d2c
 - `DESIGN_FILE`: your product design file's fileKey.
 - `TOKEN_DOCS`: where your token/component system is documented; if nowhere, run one c2d2c:govern pass first.
 - `DS_ROUTE`: your regression-page route. Page routes like `/ds/<name>` work; Storybook/Ladle are equivalent. What matters: renderable with mock props + a stable URL to screenshot.
 - `GATES`: your aggregate of typecheck + lint + custom check:* scripts.
 - `MR_TOOL` and merge convention: e.g. GitLab FF-only with server-side rebase + `glab mr merge --auto-merge --yes`; on GitHub, `gh pr create` + `gh pr merge --auto`.
 
-### For c2d2c:export
+### For c2d2c:c2d
 - `EXPORT_FILE`: the export target. Keep it separate from the product design file (a dedicated component-archive file works well).
 - `VAR_COLLECTIONS` / `VAR_SNAPSHOT`: bootstrap token sync first (next section) or there is nothing to bind; without a variable system, exports fall back to literals. Still usable, but you lose "change a token, the whole file follows".
 - `ICON_SOURCE`: how your icon library's SVGs are obtained.
 
-### Token sync (export script + optional figma-plugin/; the skill-side rules live in c2d2c:export)
+### Token sync (export script + optional figma-plugin/; the skill-side rules live in c2d2c:c2d)
 - **The export script** (the reference implementation ships with the source project as `export-figma-variables.mjs`) needs adapting to your token structure: it assumes CSS variables in `globals.css` (`:root`/`@theme` = Light, `.dark` = Dark) split by prefix into three collections. Different layering = rewrite the collection mapping; the core machinery (Variable Pro JSON, `$codeSyntax.WEB`, cross-collection aliases, `--check` diff gate, `--apply` write-back) carries over as-is.
 - **The plugin** (`figma-plugin/`, Token Sync):
   - Change `networkAccess.allowedDomains` in `manifest.json` to your Git host (Figma requires a static declaration).

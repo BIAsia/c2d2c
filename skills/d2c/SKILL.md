@@ -1,13 +1,13 @@
 ---
-name: restore
-description: c2d2c d2c pipeline — the standard eight-step workflow for implementing or updating UI from Figma designs. Use EVERY time the user provides figma.com/design/... links asking to build, update, restyle, or restore a UI to match a design. Covers survey → plan review → spec extraction → 1:1 build → regression page → motion review → screenshot acceptance → cleanup + MR. Not for exporting code INTO Figma (that is c2d2c:export).
+name: d2c
+description: c2d2c d2c pipeline — the standard eight-step workflow for implementing or updating UI from Figma designs. Use EVERY time the user provides figma.com/design/... links asking to build, update, restyle, or restore a UI to match a design. Covers survey → plan review → spec extraction → 1:1 build → regression page → motion review → screenshot acceptance → cleanup + MR. Not for exporting code INTO Figma (that is c2d2c:c2d).
 ---
 
-# c2d2c:restore — design to code, 1:1
+# c2d2c:d2c — design to code, 1:1
 
 ## Project parameters
 
-Resolve parameters from `C2D2C.md` at the repo root (fallback: `.claude/c2d2c.md`). If neither exists, offer to bootstrap one from the template at `../../templates/C2D2C.template.md` (relative to this SKILL.md — it sits at the plugin root): fill what the repo itself reveals (token files, gate scripts, regression routes, git host), ask for the rest. This skill uses `DESIGN_FILE`, `TOKEN_DOCS`, `DS_ROUTE`, `GATES`, `MR_TOOL`, `DEPLOY_ORDER`.
+Resolve parameters from `C2D2C.md` at the repo root (fallback: `.claude/c2d2c.md`). If neither exists, offer to bootstrap one from the template at `../../templates/C2D2C.template.md` (plugin root; standalone installs without that file fetch https://raw.githubusercontent.com/BIAsia/c2d2c/main/templates/C2D2C.template.md): fill what the repo itself reveals (token files, gate scripts, regression routes, git host), ask for the rest. This skill uses `DESIGN_FILE`, `TOKEN_DOCS`, `DS_ROUTE`, `GATES`, `MR_TOOL`, `DEPLOY_ORDER`.
 
 Core principles: **agree on the plan before building, implement 1:1, every component gets a regression surface, finish with no loose ends.**
 Three points where you MUST stop and wait for user confirmation: step 2 (plan), step 3 (off-system styles), step 7 (acceptance).
@@ -45,8 +45,8 @@ Read each section with `get_design_context` + `get_variable_defs`, **down to eve
 
 When the change involves a **reusable component** (new, or visual/state changes to an existing one), create or update its `DS_ROUTE/<component>` page:
 
-- State enumeration follows the same standard as c2d2c:export: every variant axis (read from `tv()`/type unions, don't guess), every data shape (value/empty/fallback/truncation/loading/error), every interaction state (rest/hover/focus/selected/disabled + hover popovers).
-- The page renders from mock props, no live data. It is both the proof that the presentation surface is isolated and the state checklist for a future c2d2c:export run.
+- State enumeration follows the same standard as c2d2c:c2d: every variant axis (read from `tv()`/type unions, don't guess), every data shape (value/empty/fallback/truncation/loading/error), every interaction state (rest/hover/focus/selected/disabled + hover popovers).
+- The page renders from mock props, no live data. It is both the proof that the presentation surface is isolated and the state checklist for a future c2d2c:c2d run.
 - For heavily coupled components, extract the pure presentation core first (see step 1) so the live caller and the regression page share it: this kills hand-copied replicas that drift.
 - Pure page-level changes (no reusable component) may skip this step; say why.
 
@@ -60,7 +60,7 @@ Walk every animation, transition, and hover/active/loading/empty state in the mo
 
 ## 7. Screenshot acceptance (STOP)
 
-- What to capture: the regression page, full plus close-ups of key states; if there's no regression page, capture the real route. Use `../../scripts/ds-shot.mjs` (plugin root; `node ds-shot.mjs <route> [--port N] [--dark]`) or manual browser capture.
+- What to capture: the regression page, full plus close-ups of key states; if there's no regression page, capture the real route. Use `scripts/ds-shot.mjs` bundled next to this SKILL.md (`node ds-shot.mjs <route> [--port N] [--dark]`) or manual browser capture.
 - Present them **side by side** with the Figma `get_screenshot` output; call out known deviations and why.
 - **Wait for the user to pass acceptance before step 8.** Requested changes loop back to step 4.
 

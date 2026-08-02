@@ -7,7 +7,7 @@ description: c2d2c governance pipeline — the standard workflow for converging 
 
 ## Project parameters
 
-Resolve parameters from `C2D2C.md` at the repo root (fallback: `.claude/c2d2c.md`); if absent, offer to bootstrap one from the template at `../../templates/C2D2C.template.md` (relative to this SKILL.md — it sits at the plugin root). This skill uses `TOKEN_HOME`, `SPEC_HOME`, `GATE_HOME`, `LAW_HOME`, `DS_ROUTE`, `TOKEN_EXPORT`, `GATES`.
+Resolve parameters from `C2D2C.md` at the repo root (fallback: `.claude/c2d2c.md`); if absent, offer to bootstrap one from the template at `../../templates/C2D2C.template.md` (plugin root; standalone installs without that file fetch https://raw.githubusercontent.com/BIAsia/c2d2c/main/templates/C2D2C.template.md). This skill uses `TOKEN_HOME`, `SPEC_HOME`, `GATE_HOME`, `LAW_HOME`, `DS_ROUTE`, `TOKEN_EXPORT`, `GATES`.
 
 Core mental model: **governance = convergence + freezing**. Convergence without freezing drifts back within months; freezing without cleanup leaves two systems that mislead everyone who comes later. One governance pass must complete all five moves: single source, full migration, gate, dead-code removal, written rule.
 
@@ -59,7 +59,7 @@ Get the user's sign-off before touching code.
 
 - Add/update a rule in `LAW_HOME`: one-sentence rule + pointer to the spec + gate name, so future agents get it right without reading the spec.
 - Create/update the `DS_ROUTE` preview page for the new ladder (token visualization + component state matrix).
-- Run `TOKEN_EXPORT` to sync the token changes to the design side (the token flow described in c2d2c:export).
+- Run `TOKEN_EXPORT` to sync the token changes to the design side (the token flow described in c2d2c:c2d).
 
 ## Reporting rhythm
 

@@ -1,9 +1,9 @@
 ---
-name: export
-description: c2d2c c2d pipeline — the rules and process for exporting anything from code INTO Figma (code-to-design), UI components, state matrices, and design tokens/variables alike, and for keeping the token snapshot and its CI gate honest when tokens change. Use whenever the user wants code state reflected in Figma — "export/write/sync this component (or these tokens) to Figma", "update the Figma variables", "I changed a token, regenerate the snapshot", "the figma-variables gate is red". Not for implementing code from Figma designs (that is c2d2c:restore).
+name: c2d
+description: c2d2c c2d pipeline — the rules and process for exporting anything from code INTO Figma (code-to-design), UI components, state matrices, and design tokens/variables alike, and for keeping the token snapshot and its CI gate honest when tokens change. Use whenever the user wants code state reflected in Figma — "export/write/sync this component (or these tokens) to Figma", "update the Figma variables", "I changed a token, regenerate the snapshot", "the figma-variables gate is red". Not for implementing code from Figma designs (that is c2d2c:d2c).
 ---
 
-# c2d2c:export — code to design, every state
+# c2d2c:c2d — code to design, every state
 
 ## Pre-flight: verify the token bridge
 
@@ -17,7 +17,7 @@ Only then start the export; from here on, binding is automatic — every value t
 
 ## Project parameters
 
-Resolve parameters from `C2D2C.md` at the repo root (fallback: `.claude/c2d2c.md`); if absent, offer to bootstrap one from the template at `../../templates/C2D2C.template.md` (relative to this SKILL.md — it sits at the plugin root). This skill uses `EXPORT_FILE` (if the user gives a link, the link wins), `VAR_COLLECTIONS`, `VAR_SNAPSHOT`, `ICON_SOURCE`, `DS_ROUTE`, and for token work `TOKEN_HOME`, `TOKEN_EXPORT`.
+Resolve parameters from `C2D2C.md` at the repo root (fallback: `.claude/c2d2c.md`); if absent, offer to bootstrap one from the template at `../../templates/C2D2C.template.md` (plugin root; standalone installs without that file fetch https://raw.githubusercontent.com/BIAsia/c2d2c/main/templates/C2D2C.template.md). This skill uses `EXPORT_FILE` (if the user gives a link, the link wins), `VAR_COLLECTIONS`, `VAR_SNAPSHOT`, `ICON_SOURCE`, `DS_ROUTE`, and for token work `TOKEN_HOME`, `TOKEN_EXPORT`.
 
 ## Three hard rules
 
@@ -64,9 +64,9 @@ Ask once before exporting: create Figma components (component/variant set) or fl
 Design tokens are exported state too; the difference is they carry a generated snapshot and a CI gate that keeps the two sides honest.
 
 - **Code is the source of truth.** When tokens change in `TOKEN_HOME` (mind every registration point: CSS variable + theme alias + class ladder), run `TOKEN_EXPORT` to regenerate `VAR_SNAPSHOT`, and commit the CSS change and the snapshot **together**. A red `check:figma-variables` gate means exactly "one side moved without the other" — that is the gate doing its job, not an error to silence. Never hand-edit the snapshot; it is generated output.
-- **Getting variables into Figma**: if the project adopted the companion Token Sync plugin (`../../figma-plugin/`), designers Pull and everything — including bound foundation posters — updates in place. Without the plugin, create/update the variable collections yourself via `use_figma`, following the same collection/mode/`$codeSyntax.WEB` layout that `VAR_SNAPSHOT` records.
+- **Getting variables into Figma**: if the project adopted the companion Token Sync plugin (`../../figma-plugin/`, source: https://github.com/BIAsia/c2d2c/tree/main/figma-plugin), designers Pull and everything — including bound foundation posters — updates in place. Without the plugin, create/update the variable collections yourself via `use_figma`, following the same collection/mode/`$codeSyntax.WEB` layout that `VAR_SNAPSHOT` records.
 - **Renames start from the code side**: a Figma-side rename arrives as delete + add and orphans every binding.
-- **Designer-side edits**: with the plugin adopted, designer pushes arrive as `figma-sync/*` MRs, red by design, with safe literal values already written back into the CSS and everything ambiguous itemized for a human. The engineer-side review flow lives in `../../ADAPTING.md` (Token sync section).
+- **Designer-side edits**: with the plugin adopted, designer pushes arrive as `figma-sync/*` MRs, red by design, with safe literal values already written back into the CSS and everything ambiguous itemized for a human. The engineer-side review flow lives in `../../ADAPTING.md` (Token sync section; standalone: https://github.com/BIAsia/c2d2c/blob/main/ADAPTING.md).
 
 ## After exporting
 

@@ -1,6 +1,26 @@
 # c2d2c
 
-**Code-to-design-to-code.** Four pipelines closing the loop between Figma and a production codebase, packaged as a Claude Code plugin (a skill series) plus a Figma plugin.
+**Code-to-design-to-code.** Three skills that close the loop between Figma and a production codebase, plus an optional Token Sync Figma plugin. The name is the shape: `c2d` and `d2c` are the two arcs; `ds-govern` is the outer ring that keeps the loop from drifting apart.
+
+## Use
+
+```bash
+npx skills add BIAsia/c2d2c
+```
+
+Then just say what you want — each skill triggers on intent:
+
+- **code → Figma** (`c2d`): *"Map out the search module — components and states — and export it to Figma: \<figma link\>"*
+- **Figma → code** (`d2c`): *"Implement this design 1:1: \<figma link\>"*
+- **converge the system** (`ds-govern`): *"Unify how radius is used across the project — one ladder, migrate everything, gate it."*
+
+That's the whole workflow. No upfront configuration: on first run a skill reads what it can from your repo (tokens, gates, regression pages, git host), asks about the rest, and saves the answers to `C2D2C.md` at the repo root so it never asks again. The one hard prerequisite is the Figma MCP connector — read access for `d2c`, write access (`use_figma`) for `c2d`. Everything else is optional and degrades gracefully.
+
+## Model
+
+Run the skills with **Claude Fable 5**. Each pipeline is a long multi-stop agent run (Figma tool orchestration, regression screenshots, MR automation); earlier models tend to drop steps and need re-prompting partway through — Fable 5 is what makes the loop run smoothly end to end.
+
+## What each skill enforces
 
 | Skill | Pipeline | One line |
 | --- | --- | --- |
@@ -8,27 +28,13 @@
 | `c2d2c:c2d` | code → Figma | Everything that moves code state into Figma — components AND tokens. Three hard rules (enumerate every state from source, bind everything to tokens, ask before componentizing), 12 field-tested use_figma gotchas, plus the token-snapshot/gate discipline |
 | `c2d2c:ds-govern` | code → code | Converge + freeze a style system: census, spec (stop), single source, full migration, CI gate, dead-code removal, write-back |
 
-The name is the shape: `c2d` and `d2c` are the two arcs; `ds-govern` is the outer ring that keeps the loop from drifting apart. The optional Token Sync Figma plugin gives designers a push lane back into code — its engineering-side flow is covered by `c2d2c:c2d` + ADAPTING.md.
+The optional Token Sync Figma plugin gives designers a push lane back into code — its engineering-side flow is covered by `c2d2c:c2d` + ADAPTING.md.
 
-## Model
+## Tuning (all optional)
 
-Run the skills with **Claude Fable 5**. Each pipeline is a long multi-stop agent run (Figma tool orchestration, regression screenshots, MR automation); earlier models tend to drop steps and need re-prompting partway through — Fable 5 is what makes the loop run smoothly end to end.
-
-## Install
-
-With the skills CLI:
-
-```bash
-npx skills add BIAsia/c2d2c
-```
-
-Installs `d2c`, `c2d`, and `ds-govern` (project-level by default; `-g` for user-level). Each skill travels with what it needs; shared resources it references (the C2D2C template, ADAPTING.md, the Figma plugin source) are fetched from this repository on demand.
-
-As a Claude Code plugin: add this repo as a local marketplace/plugin. The skills then resolve as `c2d2c:d2c` etc., with all plugin-root resources available locally.
-
-## Configure
-
-All skills read one config file: **`C2D2C.md` at your repo root** (fallback `.claude/c2d2c.md`). Copy `templates/C2D2C.template.md` there and fill it in; any skill will offer to bootstrap it on first run, discovering what it can from the repo. Prerequisites and per-parameter guidance: [ADAPTING.md](ADAPTING.md).
+- `C2D2C.md` is bootstrapped on first run; pre-create it from `templates/C2D2C.template.md` if you want to control the answers up front. Per-parameter guidance: [ADAPTING.md](ADAPTING.md).
+- The skills get better with more surface to work with — a token system, a `/ds`-style regression route, CI gates, `glab`/`gh` — but a missing piece only degrades that step, it never blocks the run ([ADAPTING.md](ADAPTING.md) lists what degrades to what).
+- Prefer the plugin form? Add this repo as a local Claude Code marketplace/plugin; the skills then resolve as `c2d2c:d2c` etc., with all plugin-root resources available locally.
 
 ## Contents
 
